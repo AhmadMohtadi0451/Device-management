@@ -16,6 +16,8 @@ const DeviceFilters = () => {
 
   const debouncedSearch = useDebounce(search, 300);
 
+  const statusOptions = ["All", "Online", "Offline", "Warning"];
+
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
 
@@ -43,25 +45,16 @@ const DeviceFilters = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-      <div className="flex gap-2">
-        <Button
-          variant={status === "All" ? "primary" : "secondary"}
-          onClick={() => setStatus("All")}
-        >
-          All
-        </Button>
-        <Button
-          variant={status === "Online" ? "primary" : "secondary"}
-          onClick={() => setStatus("Online")}
-        >
-          Online
-        </Button>
-        <Button
-          variant={status === "Offline" ? "primary" : "secondary"}
-          onClick={() => setStatus("Offline")}
-        >
-          Offline
-        </Button>
+      <div className="flex gap-2 flex-wrap">
+        {statusOptions.map((option) => (
+          <Button
+            key={option}
+            variant={status === option ? "primary" : "secondary"}
+            onClick={() => setStatus(option)}
+          >
+            {option}
+          </Button>
+        ))}
       </div>
     </div>
   );

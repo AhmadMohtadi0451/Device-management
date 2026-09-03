@@ -1,15 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 
 import useDeviceStore from "@/store/deviceStore";
 import Button from "@/components/ui/button";
+import DeviceFilters from "@/components/device/deviceFilters";
 import DeviceList from "@/components/device/deviceList";
 import AddDeviceModal from "@/components/device/addDeviceModal";
 
 const Home = () => {
   const { devices, addDevice, removeDevice } = useDeviceStore();
+  const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const search = searchParams.get("search") || "";
+  const statusFilter = searchParams.get("status") || "All";
+
+  const filteredDevices = useMemo(() => {
+    return devices.filter((device) => {
+      const matchSearch =
+        device.name.toLowerCase().includes(search.toLowerCase()) ||
+        device.ip.includes(search);
+      const matchStatus =
+        statusFilter === "All" || device.status === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [devices, search, statusFilter]);
 
   const handleAddDevice = (data: {
     name: string;
@@ -35,7 +52,7 @@ const Home = () => {
               Device Management
             </h1>
             <p className="mt-1 text-sm text-gray-500">
-              {devices.length} devices registered in system
+              {filteredDevices.length} devices registered in system
             </p>
           </div>
           <Button variant="primary" onClick={() => setIsModalOpen(true)}>
@@ -56,7 +73,8 @@ const Home = () => {
           </Button>
         </div>
 
-        <DeviceList devices={devices} onDelete={removeDevice} />
+        <DeviceFilters />
+        <DeviceList devices={filteredDevices} onDelete={removeDevice} />
 
         <AddDeviceModal
           isOpen={isModalOpen}
