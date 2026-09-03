@@ -1,53 +1,54 @@
 "use client";
 
-import { useState } from "react";
-import Modal from "../ui/modal";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { deviceSchema, type DeviceFormData } from "@/lib/validations";
 import Input from "../ui/input";
+import Modal from "../ui/modal";
 import Button from "../ui/button";
 
 interface AddDeviceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (data: {
-    name: string;
-    ip: string;
-    status: "Online" | "Offline" | "Warning";
-  }) => void;
+  onAdd: (data: DeviceFormData) => void;
 }
 
 const AddDeviceModal = ({ isOpen, onClose, onAdd }: AddDeviceModalProps) => {
-  const [name, setName] = useState("");
-  const [ip, setIp] = useState("");
-  const [status, setStatus] = useState<"Online" | "Offline" | "Warning">(
-    "Online",
-  );
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<DeviceFormData>({
+    resolver: zodResolver(deviceSchema),
+    defaultValues: {
+      name: "",
+      ip: "",
+      status: "Online",
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onAdd({ name, ip, status });
-    setName("");
-    setIp("");
-    setStatus("Online");
+  const onSubmit = (data: DeviceFormData) => {
+    onAdd(data);
+    reset();
     onClose();
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Add New Device">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input
           label="Device Name"
           placeholder="Enter device name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
+          {...register("name")}
+          error={errors.name?.message}
         />
 
         <Input
           label="IP Address"
           placeholder="e.g. 192.168.1.1"
-          value={ip}
-          onChange={(e) => setIp(e.target.value)}
-          required
+          {...register("ip")}
+          error={errors.ip?.message}
         />
 
         <div>
@@ -55,10 +56,7 @@ const AddDeviceModal = ({ isOpen, onClose, onAdd }: AddDeviceModalProps) => {
             Status
           </label>
           <select
-            value={status}
-            onChange={(e) =>
-              setStatus(e.target.value as "Online" | "Offline" | "Warning")
-            }
+            {...register("status")}
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <option value="Online">Online</option>
