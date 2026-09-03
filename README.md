@@ -33,7 +33,7 @@ This project follows the **Model-View-ViewModel** pattern:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/device-dashboard.git
+git clone https://github.com/AhmadMohtadi0451/Device-management.git
 
 # Install dependencies
 npm install
