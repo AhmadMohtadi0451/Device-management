@@ -1,36 +1,22 @@
 import type { Device } from "@/types/device.types";
+import { mockDevices } from "@/lib/mockData";
+import { DeviceModel } from "@/models/device.models";
 
-export class DeviceModel {
-  private static devices: Device[] = [];
+DeviceModel.seed(mockDevices);
 
-  static async getAll(): Promise<Device[]> {
-    return this.devices;
-  }
+export const DeviceService = {
+  async getAll(): Promise<Device[]> {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return DeviceModel.getAll();
+  },
 
-  static async create(device: Omit<Device, "id">): Promise<Device> {
-    const newDevice = {
-      ...device,
-      id: crypto.randomUUID(),
-    };
-    this.devices = [...this.devices, newDevice];
-    return newDevice;
-  }
+  async create(device: Omit<Device, "id">): Promise<Device> {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return DeviceModel.create(device);
+  },
 
-  static async delete(id: string): Promise<void> {
-    this.devices = this.devices.filter((device) => device.id !== id);
-  }
-
-  static async update(id: string, data: Partial<Device>): Promise<Device> {
-    const device = this.devices.find((d) => d.id === id);
-    if (!device) throw new Error("Device not found");
-    const updated = { ...device, ...data };
-    this.devices = this.devices.map((data) =>
-      data.id === id ? updated : data,
-    );
-    return updated;
-  }
-
-  static async seed(data: Device[]): Promise<void> {
-    this.devices = data;
-  }
-}
+  async delete(id: string): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return DeviceModel.delete(id);
+  },
+};
