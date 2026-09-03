@@ -4,7 +4,7 @@ import Badge from "../ui/badge";
 
 interface DeviceCardProps {
   device: Device;
-  onDelete: (id: string) => void;
+  onDelete: (device: Device) => void;
 }
 
 const DeviceCard = ({ device, onDelete }: DeviceCardProps) => {
@@ -20,7 +20,9 @@ const DeviceCard = ({ device, onDelete }: DeviceCardProps) => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onDelete(device.id)}
+          onClick={() => {
+            onDelete(device);
+          }}
           className="text-gray-400 hover:text-red-600"
         >
           <svg

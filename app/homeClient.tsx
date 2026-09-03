@@ -5,17 +5,19 @@ import { useSearchParams } from "next/navigation";
 import { useDevices } from "@/hooks/useDevices";
 
 import type { Device } from "@/types/device.types";
-import { useSnackbar } from "./snackbarProvider";
 import Button from "@/components/ui/button";
 import DeviceFilters from "@/components/device/deviceFilters";
 import DeviceList from "@/components/device/deviceList";
 import AddDeviceModal from "@/components/device/addDeviceModal";
+import DeleteConfirm from "@/components/device/deleteConfirmation";
+import { useSnackbar } from "./snackbarProvider";
 
 const Home = () => {
   const { devices, isLoading, addDevice, deleteDevice } = useDevices();
   const { showSuccess, showError } = useSnackbar();
   const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Device | null>(null);
 
   const search = searchParams.get("search") || "";
   const statusFilter = searchParams.get("status") || "All";
@@ -45,13 +47,24 @@ const Home = () => {
     }
   };
 
-  const handleDeleteDevice = async (id: string) => {
-    try {
-      await deleteDevice(id);
-      showSuccess("Device deleted successfully!");
-    } catch (error) {
-      showError("Failed to delete device. Please try again.");
+  const handleDeleteClick = (device: Device) => {
+    setDeleteTarget(device);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteTarget) {
+      try {
+        await deleteDevice(deleteTarget.id);
+        showSuccess("Device deleted successfully!");
+        setDeleteTarget(null);
+      } catch (error) {
+        showError("Failed to delete device. Please try again.");
+      }
     }
+  };
+
+  const handleCloseModal = () => {
+    setDeleteTarget(null);
   };
 
   return (
@@ -85,10 +98,9 @@ const Home = () => {
         </div>
 
         <DeviceFilters />
-
         <DeviceList
           devices={filteredDevices}
-          onDelete={handleDeleteDevice}
+          onDelete={handleDeleteClick}
           isLoading={isLoading}
         />
 
@@ -96,6 +108,13 @@ const Home = () => {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onAdd={handleAddDevice}
+        />
+
+        <DeleteConfirm
+          isOpen={!!deleteTarget}
+          onClose={handleCloseModal}
+          onConfirm={handleConfirmDelete}
+          deviceName={deleteTarget?.name || ""}
         />
       </div>
     </main>

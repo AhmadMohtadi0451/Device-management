@@ -8,6 +8,7 @@ export const useDevices = () => {
   const { data: devices = [], isLoading } = useQuery({
     queryKey: ["devices"],
     queryFn: DeviceService.getAll,
+    staleTime: 5000,
   });
 
   const addDeviceMutation = useMutation({
