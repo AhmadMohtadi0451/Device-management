@@ -1,4 +1,5 @@
 import type { Device } from "@/types/device.types";
+import Badge from "../ui/badge";
 
 interface DeviceCardProps {
   device: Device;
@@ -74,15 +75,7 @@ const DeviceCard = ({ device, onDelete }: DeviceCardProps) => {
       </div>
 
       {/* Status and Last Ping */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-        <span
-          className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset ${status.color}`}
-        >
-          <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`}></span>
-          {status.label}
-        </span>
-        <span className="text-xs text-gray-500">{device.lastPing}</span>
-      </div>
+      <Badge status={device.status} />
     </div>
   );
 };
