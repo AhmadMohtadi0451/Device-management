@@ -2,14 +2,10 @@
 
 import DeviceList from "@/components/device/deviceList";
 import Button from "@/components/ui/button";
-import { mockDevices } from "@/lib/mockData";
+import useDeviceStore from "@/store/deviceStore";
 
 const Home = () => {
-  const devices = mockDevices;
-
-  const handleDelete = (id: string) => {
-    alert(`Delete device with ID: ${id}`);
-  };
+  const { devices, removeDevice } = useDeviceStore();
 
   return (
     <main className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/30">
@@ -43,7 +39,7 @@ const Home = () => {
         </div>
 
         {/* Device List */}
-        <DeviceList devices={devices} onDelete={handleDelete} />
+        <DeviceList devices={devices} onDelete={removeDevice} />
       </div>
     </main>
   );
