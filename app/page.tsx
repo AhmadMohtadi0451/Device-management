@@ -1,6 +1,7 @@
 "use client";
 
 import DeviceList from "@/components/device/deviceList";
+import Button from "@/components/ui/button";
 import { mockDevices } from "@/lib/mockData";
 
 const Home = () => {
@@ -23,7 +24,7 @@ const Home = () => {
               {devices.length} devices registered in system
             </p>
           </div>
-          <button className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors">
+          <Button variant="primary">
             <svg
               className="w-5 h-5 ml-2"
               fill="none"
@@ -38,7 +39,7 @@ const Home = () => {
               />
             </svg>
             Add New Device
-          </button>
+          </Button>
         </div>
 
         {/* Device List */}
