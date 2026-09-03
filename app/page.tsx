@@ -86,25 +86,11 @@ const Home = () => {
 
         <DeviceFilters />
 
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse"
-              >
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
-                <div className="flex justify-between pt-4 border-t border-gray-100">
-                  <div className="h-6 bg-gray-200 rounded w-16"></div>
-                  <div className="h-4 bg-gray-200 rounded w-20"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <DeviceList devices={filteredDevices} onDelete={handleDeleteDevice} />
-        )}
+        <DeviceList
+          devices={filteredDevices}
+          onDelete={handleDeleteDevice}
+          isLoading={isLoading}
+        />
 
         <AddDeviceModal
           isOpen={isModalOpen}
