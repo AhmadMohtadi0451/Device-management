@@ -2,15 +2,16 @@
 
 import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { useDevices } from "@/hooks/useDevices";
 
-import useDeviceStore from "@/store/deviceStore";
+import type { Device } from "@/types/device.types";
 import Button from "@/components/ui/button";
 import DeviceFilters from "@/components/device/deviceFilters";
-import DeviceList from "@/components/device/deviceList";
 import AddDeviceModal from "@/components/device/addDeviceModal";
+import DeviceList from "@/components/device/deviceList";
 
 const Home = () => {
-  const { devices, addDevice, removeDevice } = useDeviceStore();
+  const { devices, isLoading, addDevice, deleteDevice } = useDevices();
   const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -28,19 +29,13 @@ const Home = () => {
     });
   }, [devices, search, statusFilter]);
 
-  const handleAddDevice = (data: {
-    name: string;
-    ip: string;
-    status: "Online" | "Offline" | "Warning";
-  }) => {
+  const handleAddDevice = (data: Omit<Device, "id" | "lastPing">) => {
     const newDevice = {
-      id: crypto.randomUUID(),
-      name: data.name,
-      ip: data.ip,
-      status: data.status,
+      ...data,
       lastPing: "Just now",
     };
     addDevice(newDevice);
+    setIsModalOpen(false);
   };
 
   return (
@@ -74,7 +69,26 @@ const Home = () => {
         </div>
 
         <DeviceFilters />
-        <DeviceList devices={filteredDevices} onDelete={removeDevice} />
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse"
+              >
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
+                <div className="flex justify-between pt-4 border-t border-gray-100">
+                  <div className="h-6 bg-gray-200 rounded w-16"></div>
+                  <div className="h-4 bg-gray-200 rounded w-20"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <DeviceList devices={filteredDevices} onDelete={deleteDevice} />
+        )}
 
         <AddDeviceModal
           isOpen={isModalOpen}
