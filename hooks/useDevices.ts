@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DeviceService } from "@/services/device.service";
+import type { Device } from "@/types/device.types";
 
 export const useDevices = () => {
   const queryClient = useQueryClient();
@@ -23,11 +24,19 @@ export const useDevices = () => {
     },
   });
 
+  const addDevice = async (device: Omit<Device, "id">) => {
+    return addDeviceMutation.mutateAsync(device);
+  };
+
+  const deleteDevice = async (id: string) => {
+    return deleteDeviceMutation.mutateAsync(id);
+  };
+
   return {
     devices,
     isLoading,
-    addDevice: addDeviceMutation.mutate,
-    deleteDevice: deleteDeviceMutation.mutate,
+    addDevice,
+    deleteDevice,
     isAdding: addDeviceMutation.isPending,
     isDeleting: deleteDeviceMutation.isPending,
   };

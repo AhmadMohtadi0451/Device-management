@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./providers";
+import { SnackbarProvider } from "./snackbarProvider";
 
 export const metadata: Metadata = {
   title: "Device Dashboard",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <SnackbarProvider>{children}</SnackbarProvider>
+        </Providers>
       </body>
     </html>
   );

@@ -5,13 +5,15 @@ import { useSearchParams } from "next/navigation";
 import { useDevices } from "@/hooks/useDevices";
 
 import type { Device } from "@/types/device.types";
+import { useSnackbar } from "./snackbarProvider";
 import Button from "@/components/ui/button";
 import DeviceFilters from "@/components/device/deviceFilters";
-import AddDeviceModal from "@/components/device/addDeviceModal";
 import DeviceList from "@/components/device/deviceList";
+import AddDeviceModal from "@/components/device/addDeviceModal";
 
 const Home = () => {
   const { devices, isLoading, addDevice, deleteDevice } = useDevices();
+  const { showSuccess, showError } = useSnackbar();
   const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -29,13 +31,27 @@ const Home = () => {
     });
   }, [devices, search, statusFilter]);
 
-  const handleAddDevice = (data: Omit<Device, "id" | "lastPing">) => {
-    const newDevice = {
-      ...data,
-      lastPing: "Just now",
-    };
-    addDevice(newDevice);
-    setIsModalOpen(false);
+  const handleAddDevice = async (data: Omit<Device, "id" | "lastPing">) => {
+    try {
+      const newDevice = {
+        ...data,
+        lastPing: "Just now",
+      };
+      await addDevice(newDevice);
+      showSuccess("Device added successfully!");
+      setIsModalOpen(false);
+    } catch (error) {
+      showError("Failed to add device. Please try again.");
+    }
+  };
+
+  const handleDeleteDevice = async (id: string) => {
+    try {
+      await deleteDevice(id);
+      showSuccess("Device deleted successfully!");
+    } catch (error) {
+      showError("Failed to delete device. Please try again.");
+    }
   };
 
   return (
@@ -87,7 +103,7 @@ const Home = () => {
             ))}
           </div>
         ) : (
-          <DeviceList devices={filteredDevices} onDelete={deleteDevice} />
+          <DeviceList devices={filteredDevices} onDelete={handleDeleteDevice} />
         )}
 
         <AddDeviceModal
